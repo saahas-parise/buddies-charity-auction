@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body, h2, h3, table, a, input, button, th, td, .pagination {
+        font-family: Georgia, serif;
+    }
+
+    body {
+        background-color: #E6E6FA; 
+    }
+
+    .container, .pagination {
+        background-color: #B0C4DE;
+        border: 2px solid #4682B4; 
+        border-radius: 0;
+        padding: 20px;
+        margin-bottom: 20px;
+        color: #000; 
+    }
+
+    h2, h3 {
+        color: #000; 
+        padding-bottom: 10px;
+    }
+
+    .table {
+        margin-bottom: 20px;
+        border-collapse: collapse;
+    }
+
+    .table, .table th, .table td {
+        border: 1px solid #A9A9A9; 
+    }
+
+    .table th {
+        background-color: #B0C4DE; 
+        color: #000; 
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f8f8; 
+    }
+
+    .btn-danger {
+        background-color: #4682B4; 
+        border-color: #4682B4;
+    }
+
+    .btn-danger:hover {
+        background-color: #4169E1; 
+        border-color: #4169E1;
+    }
+
+    .pagination .page-link {
+        color: #4682B4; 
+    }
+
+    .pagination .active .page-link {
+        background-color: #4682B4; 
+        border-color: #4682B4;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #A9A9A9; 
+    }
+
+    .pagination .page-link:hover {
+        color: #4169E1; 
+    }
+
+
+</style>
+
+
+<br><br>
+
+<form action="" method="post" class="center">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.user_id.label }}<br />
+        {{ form.user_id(size=32) }}<br />
+        {% for error in form.user_id.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+
+    <p>{{ form.submit() }}</p>
+</form>
+
+{% if current_user.is_authenticated %}
+<h2 style="margin-left: 100px;">Your reviews:</h2>
+<br>
+<table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Product ID</th>
+            <th scope="col">Rating</th>
+            <th scope="col">Review</th>
+            <th scope="col">Date posted</th>
+            <th scope="col">Update/Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% set reviews_per_page = 5 %}
+        {% set start_index = (page - 1) * reviews_per_page %}
+        {% set end_index = start_index + reviews_per_page %}
+
+        {% for i in range(start_index, end_index) %}
+            {% if i < my_reviews|length %} {% set review=my_reviews[i] %}
+            <tr>
+                <th scope="row"><a href="/product/{{review.pid}}">{{ review.pid }}</a></th>
+                <td>{% for i in range(review.rating) %}⭐{% endfor %}</td>
+                <td>{{review.feedback}}</td>
+                <td>{{review.date_posted}}</td>
+                <td>
+                    <a href="{{ url_for('reviews.addReview', id=review.pid)}}">Update review</a>
+                    <br> <br>
+                    <form action="" id="delete_review" method="post">
+                        <input type="hidden" name="action" value="delete_review">
+                        <input type="hidden" name="review_id" value="{{ review.id }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+
+                </td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<div class="container">
+    <ul class="pagination">
+        {% set total_pages = (my_reviews|length + reviews_per_page - 1) // reviews_per_page %}
+        {% set max_pages_shown = 5 %} {# Adjust the number of page links to display #}
+        {% set half_max_pages_shown = (max_pages_shown // 2) %}
+
+        {# Previous button #}
+        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+            <a class="page-link" href="?page={{ page - 1 }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+
+        {# Page links #}
+        {% for page_num in range(1, total_pages + 1) %}
+        {% if page_num == page or (page_num >= page - half_max_pages_shown and page_num <= page + half_max_pages_shown)
+            %} <li class="page-item {% if page == page_num %}active{% endif %}">
+            <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {# Next button #}
+            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ page + 1 }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+    </ul>
+</div>
+{% else %}
+<h2>All reviews</h2>
+<table class='table table-hover table-bordered container'>
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">Product ID</th>
+            <th scope="col">User ID</th>
+            <th scope="col">Rating</th>
+            <th scope="col">Review</th>
+            <th scope="col">Date posted</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for review in all_reviews%}
+        <tr>
+            <th scope="row">{{review.pid}}</th>
+            <td>{{review.uid}}</td>
+            <td>{% for i in range(review.rating) %}⭐{% endfor %}</td>
+            <td>{{review.feedback}}</td>
+            <td>{{review.date_posted}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}

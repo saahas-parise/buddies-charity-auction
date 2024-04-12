@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+{% block content %}
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" rel="stylesheet">
+
+<style>
+    body, h1, h2, h3, h4, h5, h6, p, a, th, td, input, button, select, textarea {
+        font-family: Georgia, serif; 
+    }
+
+    body {
+        background-color: #E6E6FA; 
+    }
+    .dashboard-container {
+        background-color: #B0C4DE; 
+        padding: 20px;
+        margin-top: 20px;
+        border-radius: 0; 
+        border: 2px solid #4682B4; 
+    }
+    .table {
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+    .table, .table th, .table td {
+        border: 1px solid #A9A9A9; 
+    }
+    .table th {
+        background-color: #B0C4DE; 
+        color: #000; 
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f8f8;
+    }
+    .btn-light, .btn-primary {
+        background-color: #4682B4; 
+        color: white;
+        border: 1px solid #4682B4;
+    }
+    .btn-light:hover, .btn-primary:hover {
+        background-color: #4169E1; 
+        border-color: #4169E1;
+    }
+    .balance-display {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="container dashboard-container">
+    {% if current_user.is_authenticated %}
+    <h2>My Dashboard (User ID: {{ current_user.id }}) </h2>
+    <p> Hello, {{ current_user.firstname }} {{ current_user.lastname }}! From your My Account Dashboard you have the ability to view a snapshot of your recent account activity and update your account information. Select a link below to view or edit information. </p>
+    <p>Email: {{ current_user.email }}</p>
+    <p>Password: **********</p>
+    <div class="balance-display">
+        <strong>Balance:</strong> ${{ current_user.balance }}
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {{ render_form(form) }}
+    
+    <p> </p>
+    <a href="{{ url_for('users.update') }}" type="button" class="btn btn-light">Account Settings</a>
+
+    <h3>Recent Bids</h3>
+    <table class='table table-hover'>
+        <table class='table table-hover'>
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Bid Amount</th>
+                    <th scope="col">Date of Bid</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bid in bid_history%}
+                <tr>
+                    <th scope="row">{{bid.product_name}}</th>
+                    <th scope="row">{{bid.amount}}</th>
+                    <th scope="row">{{bid.bidtime}}</th>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+    
+    </table>
+
+
+
+    <h3>Recent Purchases</h3>
+    <table class='table table-hover'>
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Product Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">Date of Purchase</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in purchase_history%}
+            <tr>
+    
+                <th scope="row"><a
+                        href="{{ url_for('products.product_info', product_id=purchase.pid) }}">{{purchase.name}}</a>
+                </th>
+    
+                <th scope="row">{{purchase.price}}</th>
+                <td>{{humanize_time(purchase.time_purchased)}}</td>
+                <td>Unfullfilled</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-3">
+        <a href="{{ url_for('reviews.index') }}" class="btn btn-primary">Check your reviews here</a>
+    </div>
+    {% else %}
+    <p>Please <a href="{{ url_for('users.login') }}">log in</a> to view this page.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>

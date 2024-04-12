@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body, h2, table, a, input, button, th, td {
+        font-family: Georgia, serif;
+    }
+
+    body {
+        background-color: #E6E6FA; 
+    }
+
+    .container {
+        background-color: #B0C4DE; 
+        border: 2px solid #4682B4;
+        border-radius: 0; 
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    h2 {
+        color: #000; 
+        margin-bottom: 20px;
+    }
+
+    .table {
+        margin-bottom: 20px;
+        border-collapse: collapse;
+    }
+
+    .table, .table th, .table td {
+        border: 1px solid #A9A9A9;
+    }
+
+    .table th {
+        background-color: #B0C4DE; 
+        color: #000; 
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f8f8; 
+    }
+
+    a {
+        color: #4682B4;
+    }
+
+    a:hover {
+        color: #4169E1;
+    }
+
+    input[type="submit"] {
+        background-color: #4682B4; 
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        margin-top: 10px;
+        border-radius: 4px;
+    }
+
+    input[type="submit"]:hover {
+        background-color: #4169E1; 
+    }
+
+    .btn-dark {
+        background-color: #000; 
+        color: white;
+    }
+
+    .btn-dark:hover {
+        background-color: #333; 
+    }
+
+
+    .heart-button {
+        border: none;
+        background: none;
+        font-size: 24px; 
+        cursor: pointer;
+    }
+
+    .heart-button.favorite {
+        color: #ccc; 
+    }
+
+    .heart-button.unfavorite {
+        color: red; 
+    }
+
+    .heart-button:focus {
+        outline: none;
+    }
+</style>
+
+
+<br><br>
+
+{% if current_user.is_authenticated %}
+<h2>Your Wishlist:</h2>
+
+{% if already_in_cart %}
+<div class="alert alert-warning">
+    <strong>Notice:</strong> Item already in wishlist.
+</div>
+{% endif %}
+
+{% if cart|length > 0 %}
+<div class="container">
+    <table class='table table-hover'>
+        <thead>
+            <tr>
+                <th scope="col">Product name</th>
+                <th scope="col">Buy Now Price</th>
+                <th scope="col">Seller</th>
+                <th scope="col">Actions</th>
+                <th scope="col">Favorite</th>
+                <th scope="col">Negotiate Price</th> 
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in cart %}
+            <tr>
+                <th scope="row"><a href="{{ url_for('products.product_info', product_id=i.product_id) }}">{{ i.product_name }}</a></th>
+                <td>${{ i.product_price }}</td>
+                <td>{{ i.seller_name }}</td>
+                <td>
+     
+                    <form action="{{ url_for('cart.remove_from_cart') }}" method="post">
+                        <input type="hidden" name="product_id" value="{{ i.product_id }}" />
+                        <input type="submit" value="Remove from Wishlist">
+                    </form>
+                </td>
+                <td>
+    
+                    <form action="{{ url_for('cart.toggle_favorite', product_id=i.product_id) }}" method="post">
+                        {% if i.is_favorite %}
+                            <button type="submit" class="heart-button unfavorite">♥</button>
+                        {% else %}
+                            <button type="submit" class="heart-button favorite">♡</button>
+                        {% endif %}
+                    </form>
+                </td>
+                <td>
+        
+                    <form action="{{ url_for('cart.send_message') }}" method="post">
+                        <input type="hidden" name="product_id" value="{{ i.product_id }}" />
+                        <input type="hidden" name="seller_id" value="{{ i.seller_id }}" />
+                        <input type="text" name="message" placeholder="Enter a price here..." required>
+                        <input type="submit" value="Send Message">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <h4>Total price: ${{ total_price }}</h4>
+</div>
+{% else %}
+<p>No item found in your Wishlist.</p>
+{% endif %}
+{% else %}
+<h3>You must <a href="{{ url_for('users.login') }}">Log in</a> to see your wishlist</h3>
+{% endif %}
+
+{% endblock %}
