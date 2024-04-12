@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center
+    }
+
+    .rating>input {
+        display: none
+    }
+
+    .rating>label {
+        position: relative;
+        width: 1em;
+        font-size: 6vw;
+        color: #FFD600;
+        cursor: pointer
+    }
+
+    .rating>label::before {
+        content: "\2605";
+        position: absolute;
+        opacity: 0
+    }
+
+    .rating>label:hover:before,
+    .rating>label:hover~label:before {
+        opacity: 1 !important
+    }
+
+    .rating>input:checked~label:before {
+        opacity: 1
+    }
+
+    .rating:hover>input:checked~label:before {
+        opacity: 0.4
+    }
+</style>
+
+
+<br><br>
+<div class="container">
+
+    <div>
+        <h2>{{ 'Write a review' if isNewReview else 'Update Your Review' }}</h2>
+        
+        
+        <div class="container">
+            <form id="review_form" method="post">
+                <div class="mb-3">
+                    <div class="rating">
+                        <input type="radio" name="rating" value="5" id="5" {{ "checked" if my_review.rating==5 }}><label
+                            for="5">☆</label>
+                        <input type="radio" name="rating" value="4" id="4" {{ "checked" if my_review.rating==4 }}><label
+                            for="4">☆</label>
+                        <input type="radio" name="rating" value="3" id="3" {{ "checked" if my_review.rating==3 }}><label
+                            for="3">☆</label>
+                        <input type="radio" name="rating" value="2" id="2" {{ "checked" if my_review.rating==2 }}><label
+                            for="2">☆</label>
+                        <input type="radio" name="rating" value="1" id="1" {{ "checked" if my_review.rating==1 }}><label
+                            for="1">☆</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Comments</label>
+                    <textarea name="comment" class="form-control" id="exampleFormControlTextarea1"
+                        rows="3">{{ my_review.description }}</textarea>
+                </div>
+        
+        
+                <button type="submit" class="btn btn-primary">{{ 'Submit' if isNewReview else 'Update Your Review' }}</button>
+            </form>
+        </div>
+
+
+    </div>
+    <br><br>
+    <div>
+        {% if isNewReview %}
+        <p>You have no reviews for this product</p>
+        {% else %}
+        <h2>Your last review</h2>
+        <table class='table table-hover table-bordered container'>
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Rating</th>
+                    <th scope="col">Review</th>
+                    <th scope="col">Last posted</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{my_review.rating}} ⭐</td>
+                    <td>{{my_review.feedback}}</td>
+                    <td>{{my_review.date_posted}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

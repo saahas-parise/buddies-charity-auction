@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br>
+
+<div class="center">
+    <p>Welcome to</p>
+    <h1 class="play big">Buddies' Charity Auctions</h1>
+    <h3>Empower Charities, Transform Lives:</h3>
+    <br>
+    <p> Shop with Purpose on our Global Charity Marketplace! Break free from traditional
+    limitations – our online platform connects you to a world of meaningful products. Bid, buy, and support causes that
+    matter. A seamless experience for users, a powerful tool for charities. Together, let's make every purchase count!</p>
+    <br>
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('index.products') }}" class="btn borders" style="background-color: #304674; color: white;">Browse our products!</a>
+    {% else %}
+    <a href="{{ url_for('users.register') }}" class="btn borders" style="background-color: #304674; color: white;">Sign up now!</a>
+    {% endif %}
+</div>
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body, h2, table, a, input, button, th, td, .pagination {
+        font-family: Georgia, serif;
+    }
+
+    body {
+        background-color: #E6E6FA; 
+    }
+
+    h2 {
+        color: #000;
+    }
+
+    .container {
+        background-color: #B0C4DE; 
+        border: 2px solid #4682B4; 
+        border-radius: 0; 
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .table {
+        margin-bottom: 20px;
+        border-collapse: collapse;
+    }
+
+    .table, .table th, .table td {
+        border: 1px solid #A9A9A9; 
+    }
+
+    .table th {
+        background-color: #B0C4DE; 
+        color: #000; 
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f8f8; 
+    }
+
+    a {
+        color: #4682B4; 
+    }
+
+    a:hover {
+        color: #4169E1;
+    }
+
+    .btn-danger {
+        background-color: #DC3545; 
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #C82333; 
+    }
+
+    .pagination .page-link {
+        color: #4682B4; 
+    }
+
+    .pagination .active .page-link {
+        background-color: #4682B4; 
+        border-color: #4682B4;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #A9A9A9; 
+    }
+
+    .pagination .page-link:hover {
+        color: #4169E1; 
+    }
+
+</style>
+
+<br><br>
+<div class="container">
+    <h2>Reviews of searched User:</h2>
+    <br>
+    <table class='table table-hover'>
+        <thead>
+            <tr>
+                <th scope="col">Product ID</th>
+                <th scope="col">User ID</th>
+                <th scope="col">Rating</th>
+                <th scope="col">Review</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if (soso_reviews is defined) and soso_reviews %}
+            {% for review in soso_reviews %}
+            <tr>
+                <th scope="row">{{ review.pid }}</th>
+                <td>{{ review.uid }}</td>
+                <td>{% for i in range(review.rating) %}⭐{% endfor %}</td>
+                <td>{{ review.feedback }}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="4">User has made no reviews</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('reviews.index') }}">Go back</a>
+</div>
+
+{% if current_user.is_authenticated %}
+<div class="container">
+    <h2>Your reviews:</h2>
+    <br>
+    <table class='table table-hover'>
+        <thead>
+            <tr>
+                <th scope="col">Product ID</th>
+                <th scope="col">User ID</th>
+                <th scope="col">Rating</th>
+                <th scope="col">Review</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for review in my_reviews %}
+            <tr>
+                <th scope="row">{{ review.pid }}</th>
+                <td>{{ review.uid }}</td>
+                <td>{% for i in range(review.rating) %}⭐{% endfor %}</td>
+                <td>{{ review.feedback }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="container">
+    <h2>All reviews</h2>
+    <table class='table table-hover'>
+        <thead>
+            <tr>
+                <th scope="col">Product ID</th>
+                <th scope="col">User ID</th>
+                <th scope="col">Rating</th>
+                <th scope="col">Review</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for review in all_reviews %}
+            <tr>
+                <th scope="row">{{ review.pid }}</th>
+                <td>{{ review.uid }}</td>
+                <td>{% for i in range(review.rating) %}⭐{% endfor %}</td>
+                <td>{{ review.feedback }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

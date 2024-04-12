@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+
+
+<br><br>
+
+
+<h2> {{ mynum }} Most expensive products for sale:</h2>
+
+
+
+
+<div class="container">
+ <div class="row">
+   {% for i in range(0, mynum) %}
+     {% set product = avail_products[i] %}
+     <div class="col-md-4">
+       <div class="card mb-4 shadow-sm">
+         <img class="card-img-top" src="{{ product.image }}" alt="{{ product.name }}">
+         <div class="card-body">
+           <h5 class="card-title">{{ product.name }}</h5>
+           <p class="card-text">Product ID: {{ product.id }}</p>
+           <p class="card-text">Buy Now Price: {{ product.buy_now }}</p>
+           <form action="{{ url_for('purchased.purchased_add', product_id=product.id) }}" method="POST">
+             <input type="submit" class="btn btn-primary" value="Purchase" />
+           </form>
+         </div>
+       </div>
+     </div>
+   {% endfor %}
+ </div>
+</div>
+
+
+{% endblock %}
